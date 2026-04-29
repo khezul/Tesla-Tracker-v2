@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tesla Fund</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+  :root { --red:#E31937; --dark:#0a0a0a; --card:#111; --border:#222; --text:#f0f0f0; --muted:#666; --green:#00e676; --mono:'Space Mono',monospace; --sans:'Syne',sans-serif; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { background:var(--dark); color:var(--text); font-family:var(--sans); min-height:100vh; padding:24px 16px 60px; }
+  .header { text-align:center; margin-bottom:40px; }
+  .logo { font-size:11px; letter-spacing:0.3em; color:var(--red); font-family:var(--mono); text-transform:uppercase; margin-bottom:12px; }
+  h1 { font-size:clamp(2rem,8vw,3.5rem); font-weight:800; line-height:1; letter-spacing:-0.03em; }
+  h1 span { color:var(--red); }
+  .subtitle { font-family:var(--mono); font-size:12px; color:var(--muted); margin-top:10px; }
+  .card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:20px 16px; margin-bottom:20px; }
+  .section-title { font-size:14px; font-weight:700; margin-bottom:16px; display:flex; align-items:center; gap:8px; }
+  .section-title::before { content:''; display:block; width:3px; height:14px; background:var(--red); border-radius:2px; }
+
+  /* COUNTDOWN */
+  .cd-label { font-family:var(--mono); font-size:10px; letter-spacing:0.25em; color:var(--muted); text-transform:uppercase; margin-bottom:16px; text-align:center; }
+  .cd-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:16px; }
+  .cd-block { background:#0a0a0a; border:1px solid var(--border); border-radius:10px; padding:14px 6px; text-align:center; }
+  .cd-num { font-family:var(--mono); font-size:clamp(1.4rem,5vw,2.2rem); font-weight:700; color:var(--red); line-height:1; }
+  .cd-unit { font-family:var(--mono); font-size:9px; color:var(--muted); margin-top:4px; }
+  .cd-date-row { font-family:var(--mono); font-size:11px; color:var(--muted); text-align:center; }
+  .cd-date-row input { background:transparent; border:none; border-bottom:1px solid var(--border); color:var(--text); font-family:var(--mono); font-size:11px; text-align:center; padding:2px 4px; width:120px; outline:none; }
+
+  /* STATS */
+  .stats-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:20px; }
+  .stat-card { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:20px 16px; }
+  .stat-card.ga { border-color:rgba(0,230,118,0.3); }
+  .stat-card.ra { border-color:rgba(227,25,55,0.3); }
+  .stat-label { font-family:var(--mono); font-size:9px; letter-spacing:0.2em; color:var(--muted); text-transform:uppercase; margin-bottom:8px; }
+  .stat-value { font-family:var(--mono); font-size:clamp(1.1rem,4vw,1.7rem); font-weight:700; line-height:1; }
+  .stat-value.g { color:var(--green); }
+  .stat-value.r { color:var(--red); }
+  .stat-sub { font-family:var(--mono); font-size:10px; color:var(--muted); margin-top:4px; }
+
+  /* SAVINGS */
+  .sav-header { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:12px; }
+  .sav-big { font-family:var(--mono); font-size:22px; font-weight:700; color:var(--red); }
+  .sav-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .sav-block { background:#0a0a0a; border:1px solid var(--border); border-radius:10px; padding:14px 12px; text-align:center; }
+  .sav-block-label { font-family:var(--mono); font-size:9px; color:var(--muted); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:8px; }
+  .sav-block-value { font-family:var(--mono); font-size:clamp(1rem,4vw,1.4rem); font-weight:700; color:var(--green); }
+  .sav-note { font-family:var(--mono); font-size:9px; color:var(--muted); margin-top:12px; text-align:center; }
+
+  /* TAXAMETER */
+  .taxi-desc { font-family:var(--mono); font-size:10px; color:var(--muted); margin-bottom:16px; line-height:1.6; text-align:center; }
+  .taxi-value { font-family:var(--mono); font-size:clamp(2rem,10vw,3.5rem); font-weight:700; color:var(--red); text-align:center; line-height:1; }
+  .taxi-sub { font-family:var(--mono); font-size:10px; color:var(--muted); margin-top:10px; text-align:center; }
+
+  /* LOG */
+  .input-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px; }
+  .input-group { display:flex; flex-direction:column; gap:5px; }
+  .input-group label { font-family:var(--mono); font-size:9px; letter-spacing:0.15em; color:var(--muted); text-transform:uppercase; }
+  .input-group input { background:#0a0a0a; border:1px solid var(--border); border-radius:8px; color:var(--text); font-family:var(--mono); font-size:14px; padding:10px 12px; outline:none; width:100%; }
+  .input-group input:focus { border-color:var(--red); }
+  .btn { width:100%; background:var(--red); border:none; border-radius:10px; color:#fff; font-family:var(--sans); font-size:14px; font-weight:700; padding:14px; cursor:pointer; margin-top:4px; }
+  .log-entries { margin-top:16px; display:flex; flex-direction:column; gap:8px; max-height:260px; overflow-y:auto; }
+  .log-entry { background:#0a0a0a; border:1px solid var(--border); border-radius:10px; padding:12px 14px; display:grid; grid-template-columns:1fr auto auto; gap:8px; align-items:center; }
+  .entry-date { font-family:var(--mono); font-size:9px; color:var(--muted); margin-bottom:4px; }
+  .entry-km { font-family:var(--mono); font-size:13px; font-weight:700; }
+  .entry-sav-label { font-family:var(--mono); font-size:9px; color:var(--muted); text-align:right; }
+  .entry-sav-value { font-family:var(--mono); font-size:16px; font-weight:700; color:var(--green); text-align:right; }
+  .entry-del { background:none; border:none; color:var(--muted); cursor:pointer; font-size:14px; padding:4px; }
+  .empty-state { text-align:center; padding:24px; font-family:var(--mono); font-size:11px; color:var(--muted); }
+
+  /* SETTINGS */
+  .set-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+
+  /* QUESTS */
+  .quest-header { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px; }
+  .quest-bar-bg { background:#1a1a1a; border-radius:999px; height:5px; overflow:hidden; margin-bottom:16px; }
+  .quest-bar-fill { height:100%; border-radius:999px; background:linear-gradient(90deg,var(--red),#ff6b6b); transition:width 0.4s; }
+  .quest-month { font-family:var(--mono); font-size:9px; letter-spacing:0.2em; color:var(--red); text-transform:uppercase; margin:16px 0 8px; }
+  .quest-item { display:flex; align-items:flex-start; gap:12px; padding:12px 14px; background:#0a0a0a; border:1px solid var(--border); border-radius:10px; margin-bottom:8px; cursor:pointer; }
+  .quest-item.done { opacity:0.4; }
+  .quest-item.done .quest-title { text-decoration:line-through; }
+  .quest-cb { width:18px; height:18px; min-width:18px; border:1.5px solid var(--muted); border-radius:4px; display:flex; align-items:center; justify-content:center; font-size:11px; margin-top:1px; }
+  .quest-item.done .quest-cb { background:var(--green); border-color:var(--green); color:#000; }
+  .quest-title { font-size:13px; font-weight:700; line-height:1.3; margin-bottom:2px; }
+  .quest-desc { font-family:var(--mono); font-size:10px; color:var(--muted); line-height:1.5; }
+  .quest-tag { font-family:var(--mono); font-size:8px; padding:2px 6px; border-radius:4px; margin-left:auto; white-space:nowrap; align-self:flex-start; }
+  .ta { background:rgba(227,25,55,0.15); color:var(--red); }
+  .tw { background:rgba(0,230,118,0.1); color:var(--green); }
+  .ts { background:rgba(255,200,0,0.1); color:#ffc800; }
+  .tg { background:rgba(100,180,255,0.1); color:#64b4ff; }
+  .quest-list { max-height:500px; overflow-y:auto; }
+  .quest-list::-webkit-scrollbar { width:3px; }
+  .quest-list::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+  .log-entries::-webkit-scrollbar { width:3px; }
+  .log-entries::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+
+  .motivation { text-align:center; padding:24px 16px; font-family:var(--mono); font-size:11px; color:var(--muted); line-height:1.8; }
+  .motivation strong { color:var(--red); font-size:13px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">&#9889; Tesla Fund</div>
+  <h1>Mircos<br><span>Countdown</span></h1>
+  <div class="subtitle">Jeder Kilometer zählt. Jeder Euro auch.</div>
+</div>
+
+<!-- COUNTDOWN -->
+<div class="card">
+  <div class="cd-label">&#8987; Zeit bis zum Kauf</div>
+  <div class="cd-grid">
+    <div class="cd-block"><div class="cd-num" id="cd-d">–</div><div class="cd-unit">Tage</div></div>
+    <div class="cd-block"><div class="cd-num" id="cd-h">–</div><div class="cd-unit">Std</div></div>
+    <div class="cd-block"><div class="cd-num" id="cd-m">–</div><div class="cd-unit">Min</div></div>
+    <div class="cd-block"><div class="cd-num" id="cd-s">–</div><div class="cd-unit">Sek</div></div>
+  </div>
+  <div class="cd-date-row">Zieldatum: <input type="date" id="target-date" onchange="saveSettings()"></div>
+  <div style="margin-top:16px;">
+    <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:9px;color:var(--muted);margin-bottom:6px;">
+      <span>Start</span>
+      <span id="prog-label">– %</span>
+      <span>Kauftag</span>
+    </div>
+    <div style="background:#1a1a1a;border-radius:999px;height:6px;overflow:hidden;">
+      <div id="prog-bar" style="height:100%;border-radius:999px;background:linear-gradient(90deg,var(--red),#ff6b6b);transition:width 1s linear;width:0%;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="stats-grid">
+  <div class="stat-card ga"><div class="stat-label">Gespart (virtuell)</div><div class="stat-value g" id="st-saved">–</div><div class="stat-sub">Benzin vs. Strom</div></div>
+  <div class="stat-card"><div class="stat-label">Km gefahren</div><div class="stat-value" id="st-km">0 km</div><div class="stat-sub">seit Start</div></div>
+  <div class="stat-card ra"><div class="stat-label">Benzinkosten</div><div class="stat-value r" id="st-benzin">–</div><div class="stat-sub">real ausgegeben</div></div>
+  <div class="stat-card"><div class="stat-label">Tesla-Kosten wären</div><div class="stat-value" id="st-tesla">–</div><div class="stat-sub">mit Wallbox</div></div>
+</div>
+
+<!-- ERSPARNIS -->
+<div class="card">
+  <div class="sav-header"><div class="section-title">Ersparnis-Prognose</div><div class="sav-big" id="sav-big">–</div></div>
+  <div class="sav-grid">
+    <div class="sav-block"><div class="sav-block-label">Pro Jahr</div><div class="sav-block-value" id="sav-year">–</div></div>
+    <div class="sav-block"><div class="sav-block-label">Über 10 Jahre</div><div class="sav-block-value" id="sav-10y">–</div></div>
+  </div>
+  <div class="sav-note" id="sav-note">Trag Fahrten ein für die Prognose.</div>
+</div>
+
+<!-- KOSTEN DES WARTENS -->
+<div class="card" style="text-align:center">
+  <div class="section-title" style="justify-content:center">Kosten des Wartens</div>
+  <div class="taxi-desc">Was dich jeder Tag ohne Tesla kostet:</div>
+  <div class="taxi-value" id="taxi-val">–,–– &#8364;</div>
+  <div class="taxi-sub" id="taxi-sub">Trag Fahrten ein um den Wert zu berechnen.</div>
+</div>
+
+<!-- EINTRAG -->
+<div class="card">
+  <div class="section-title">Fahrt eintragen</div>
+  <div class="input-row">
+    <div class="input-group"><label>Kilometer</label><input type="number" id="in-km" placeholder="z.B. 577" min="0"></div>
+    <div class="input-group"><label>Benzinkosten &#8364;</label><input type="number" id="in-cost" placeholder="z.B. 87" min="0" step="0.01"></div>
+  </div>
+  <button class="btn" onclick="addEntry()">+ Eintrag speichern</button>
+  <div class="log-entries" id="log-entries"><div class="empty-state">Noch keine Einträge.<br>Trag deinen ersten Tankstop ein.</div></div>
+</div>
+
+<!-- EINSTELLUNGEN -->
+<div class="card">
+  <div class="section-title">Einstellungen</div>
+  <div class="set-grid">
+    <div class="input-group"><label>Strom &#8364;/kWh</label><input type="number" id="set-strom" value="0.30" step="0.01" onchange="saveSettings()"></div>
+    <div class="input-group"><label>Tesla kWh/100km</label><input type="number" id="set-kwh" value="19" step="0.5" onchange="saveSettings()"></div>
+  </div>
+</div>
+
+<div class="motivation">Jeder Tankstop bringt dich näher.<br>Jeder gespeicherte Euro ist ein Argument.<br><strong>Der Juniper wartet auf dich. &#9889;</strong></div>
+
+<a href="tesla-quests.html" style="display:block;text-align:center;margin:0 0 40px;font-family:var(--mono);font-size:11px;color:var(--muted);text-decoration:none;padding:12px;border:1px solid var(--border);border-radius:10px;">&#9658; Zu den Wöchentlichen Quests</a>
+
+<script>
+var entries = JSON.parse(localStorage.getItem('tf-e') || '[]');
+var qDone = JSON.parse(localStorage.getItem('tf-q') || '{}');
+var S = JSON.parse(localStorage.getItem('tf-s') || 'null') || {strom:0.30,kwh:19,targetDate:'2028-06-01'};
+
+function saveSettings() {
+  S.strom = parseFloat(document.getElementById('set-strom').value) || 0.30;
+  S.kwh = parseFloat(document.getElementById('set-kwh').value) || 19;
+  S.targetDate = document.getElementById('target-date').value || '2028-06-01';
+  localStorage.setItem('tf-s', JSON.stringify(S));
+  updateAll();
+}
+
+function loadSettings() {
+  document.getElementById('set-strom').value = S.strom;
+  document.getElementById('set-kwh').value = S.kwh;
+  document.getElementById('target-date').value = S.targetDate;
+}
+
+function fmt(n) {
+  return n.toLocaleString('de-DE', {minimumFractionDigits:2, maximumFractionDigits:2}) + ' \u20AC';
+}
+
+function addEntry() {
+  var km = parseFloat(document.getElementById('in-km').value);
+  var cost = parseFloat(document.getElementById('in-cost').value);
+  if (!km || km <= 0) { alert('Bitte Kilometer eingeben.'); return; }
+  if (!cost || cost <= 0) { alert('Bitte Benzinkosten eingeben.'); return; }
+  var teslaCost = km / 100 * S.kwh * S.strom;
+  var saved = cost - teslaCost;
+  entries.unshift({id:Date.now(), date:new Date().toLocaleDateString('de-DE'), km:km, cost:cost, teslaCost:teslaCost, saved:saved});
+  localStorage.setItem('tf-e', JSON.stringify(entries));
+  document.getElementById('in-km').value = '';
+  document.getElementById('in-cost').value = '';
+  updateAll();
+}
+
+function deleteEntry(id) {
+  entries = entries.filter(function(e) { return e.id !== id; });
+  localStorage.setItem('tf-e', JSON.stringify(entries));
+  updateAll();
+}
+
+function renderEntries() {
+  var el = document.getElementById('log-entries');
+  if (!entries.length) { el.innerHTML = '<div class="empty-state">Noch keine Einträge.<br>Trag deinen ersten Tankstop ein.</div>'; return; }
+  el.innerHTML = entries.map(function(e) {
+    return '<div class="log-entry">' +
+      '<div><div class="entry-date">' + e.date + '</div><div class="entry-km">' + e.km.toLocaleString('de-DE') + ' km &nbsp;&middot;&nbsp; <span style="color:var(--red)">' + fmt(e.cost) + '</span></div></div>' +
+      '<div><div class="entry-sav-label">gespart</div><div class="entry-sav-value">+' + fmt(e.saved) + '</div></div>' +
+      '<button class="entry-del" onclick="deleteEntry(' + e.id + ')">&#10005;</button></div>';
+  }).join('');
+}
+
+function updateStats() {
+  var km=0, cost=0, tesla=0, saved=0;
+  entries.forEach(function(e) { km+=e.km; cost+=e.cost; tesla+=e.teslaCost; saved+=e.saved; });
+  document.getElementById('st-km').textContent = km.toLocaleString('de-DE') + ' km';
+  document.getElementById('st-benzin').textContent = cost > 0 ? fmt(cost) : '–';
+  document.getElementById('st-tesla').textContent = tesla > 0 ? fmt(tesla) : '–';
+  document.getElementById('st-saved').textContent = saved > 0 ? '+' + fmt(saved) : '–';
+}
+
+function updateSavings() {
+  if (!entries.length) {
+    ['sav-big','sav-year','sav-10y'].forEach(function(id) { document.getElementById(id).textContent = '–'; });
+    document.getElementById('sav-note').textContent = 'Trag Fahrten ein für die Prognose.';
+    document.getElementById('taxi-val').textContent = '–,–– \u20AC';
+    document.getElementById('taxi-sub').textContent = 'Trag Fahrten ein um den Wert zu berechnen.';
+    return;
+  }
+  var totalSaved = entries.reduce(function(s,e){return s+e.saved;},0);
+  var estDays = Math.max(entries.length * 18, 1);
+  var yearly = totalSaved * (365 / estDays);
+  var perDay = yearly / 365;
+  document.getElementById('sav-big').textContent = fmt(yearly);
+  document.getElementById('sav-year').textContent = fmt(yearly);
+  document.getElementById('sav-10y').textContent = fmt(yearly * 10);
+  var totalCost = entries.reduce(function(s,e){return s+e.cost;},0);
+  var totalTesla = entries.reduce(function(s,e){return s+e.teslaCost;},0);
+  document.getElementById('sav-note').textContent = 'Basis: ' + entries.length + ' Eintr\u00E4ge \u00B7 Benzin/J ' + fmt(totalCost*(365/estDays)) + ' \u2192 Strom/J ' + fmt(totalTesla*(365/estDays));
+  document.getElementById('taxi-val').textContent = fmt(perDay);
+  document.getElementById('taxi-sub').textContent = 'pro Tag den du noch wartest \u00B7 ' + fmt(yearly) + ' pro Jahr';
+}
+
+function updateCountdown() {
+  var target = new Date(S.targetDate || '2028-06-01').getTime();
+  var now = Date.now();
+  var diff = target - now;
+  if (diff <= 0) {
+    ['cd-d','cd-h','cd-m','cd-s'].forEach(function(id,i) { document.getElementById(id).textContent = '0'; });
+    document.getElementById('prog-bar').style.width = '100%';
+    document.getElementById('prog-label').textContent = '100 %';
+    return;
+  }
+  document.getElementById('cd-d').textContent = Math.floor(diff/86400000);
+  document.getElementById('cd-h').textContent = String(Math.floor((diff%86400000)/3600000)).padStart(2,'0');
+  document.getElementById('cd-m').textContent = String(Math.floor((diff%3600000)/60000)).padStart(2,'0');
+  document.getElementById('cd-s').textContent = String(Math.floor((diff%60000)/1000)).padStart(2,'0');
+  var start = new Date('2026-04-25').getTime();
+  var total = target - start;
+  var elapsed = now - start;
+  var pct = Math.min(100, Math.max(0, Math.round(elapsed / total * 100)));
+  document.getElementById('prog-bar').style.width = pct + '%';
+  document.getElementById('prog-label').textContent = pct + ' %';
+}
+
+function updateAll() {
+  renderEntries();
+  updateStats();
+  updateSavings();
+}
+
+// INIT
+loadSettings();
+updateAll();
+updateCountdown();
+setInterval(updateCountdown, 1000);
+</script>
+</body>
+</html>
+
